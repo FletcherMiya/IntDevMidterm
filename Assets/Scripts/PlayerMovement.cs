@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody2D rb;
@@ -20,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
     bool walljumpEnabled = false;
 
     Vector3 startpos = new Vector3(-11.2f, 0.81f, 0f);
+
+    public Particle burstParticles;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,7 +48,7 @@ public class PlayerMovement : MonoBehaviour
     {
         HorizontalMove(horizontalMove);
 
-        if(transform.position.x < -6.15 && transform.position.x > -7.15 && transform.position.y < 22 && transform.position.y > 20)
+        if(rb.transform.position.x < -6.15 && rb.transform.position.x > -7.15 && rb.transform.position.y < 22 && rb.transform.position.y > 20)
         {
             walljumpEnabled = true;
         }
@@ -71,9 +74,15 @@ public class PlayerMovement : MonoBehaviour
             grounded = false;
         }
 
-        RaycastHit2D wallcheckleft = Physics2D.Raycast(transform.position, Vector2.left, castDist);
-        RaycastHit2D wallcheckright = Physics2D.Raycast(transform.position, Vector2.right, castDist);
-        if ((wallcheckright.collider != null || wallcheckleft.collider != null) && horizontalMove != 0)
+        if (burstParticles != null && hit && horizontalMove != 0)
+        {
+            Vector3 tempPos = new Vector3(transform.position.x, transform.position.y - 0.5f);
+            Instantiate(burstParticles, tempPos, Quaternion.identity);
+        }
+
+        RaycastHit2D wallcheckleft = Physics2D.Raycast(transform.position, Vector2.left, 0.5f);
+        RaycastHit2D wallcheckright = Physics2D.Raycast(transform.position, Vector2.right, 0.5f);
+        if ((wallcheckright.collider != null || wallcheckleft.collider != null) && horizontalMove != 0 && walljumpEnabled)
         {
             walljump = true;
             doublejump = true;
